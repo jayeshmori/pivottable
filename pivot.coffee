@@ -601,11 +601,10 @@ callWithJQuery ($) ->
                     axisValues[k][v]++
 
             #start building the output
-            uiTable = $("<table>", "class": "pvtUi").attr("cellpadding", 5)
 
             #renderer control
-            rendererControl = $("<td>")
 
+            rendererControl = $(".pivotUI #renderers");
             renderer = $("<select>")
                 .addClass('pvtRenderer')
                 .appendTo(rendererControl)
@@ -615,7 +614,7 @@ callWithJQuery ($) ->
 
 
             #axis list, including the double-click menu
-            colList = $("<td>").addClass('pvtAxisContainer pvtUnused')
+            colList = $(".pivotUI #dimensions").addClass('pvtAxisContainer pvtUnused')
             shownAttributes = (c for c in tblCols when c not in opts.hiddenAttributes)
 
             unusedAttrsVerticalAutoOverride = false
@@ -709,43 +708,42 @@ callWithJQuery ($) ->
 
                     attrElem.bind "dblclick", showFilterList
 
-            tr1 = $("<tr>").appendTo(uiTable)
+
 
             #aggregator menu and value area
-
             aggregator = $("<select>").addClass('pvtAggregator')
                 .bind "change", -> refresh() #capture reference
             for own x of opts.aggregators
                 aggregator.append $("<option>").val(x).html(x)
 
-            $("<td>").addClass('pvtVals')
-              .appendTo(tr1)
+            $(".pivotUI #measures").addClass('pvtVals')
               .append(aggregator)
               .append($("<br>"))
 
             #column axes
-            $("<td>").addClass('pvtAxisContainer pvtHorizList pvtCols').appendTo(tr1)
+            #td1 = $("<td>").appendTo(tr1);
+            $(".pivotUI #pivotColDrop").addClass('pvtAxisContainer pvtHorizList pvtCols')
 
-            tr2 = $("<tr>").appendTo(uiTable)
+
 
             #row axes
-            tr2.append $("<td>").addClass('pvtAxisContainer pvtRows').attr("valign", "top")
+            $(".pivotUI #pivotRowDrop").addClass('pvtAxisContainer pvtHorizList pvtRows')
 
             #the actual pivot table container
-            pivotTable = $("<td>")
+            pivotTable = $(".pivotUI #pivotResult")
                 .attr("valign", "top")
-                .addClass('pvtRendererArea')
-                .appendTo(tr2)
+                .addClass('pvtRendererArea');
 
-            #finally the renderer dropdown and unused attribs are inserted at the requested location
-            if opts.unusedAttrsVertical == true or unusedAttrsVerticalAutoOverride
-                uiTable.find('tr:nth-child(1)').prepend rendererControl
-                uiTable.find('tr:nth-child(2)').prepend colList
-            else
-                uiTable.prepend $("<tr>").append(rendererControl).append(colList)
+#            #finally the renderer dropdown and unused attribs are inserted at the requested location
+#            if opts.unusedAttrsVertical == true or unusedAttrsVerticalAutoOverride
+#                uiTable.find('tr:nth-child(1)').prepend rendererControl
+#                uiTable.find('tr:nth-child(2)').prepend colList
+#            else
+#                uiTable.prepend $("<tr>").append(rendererControl).append(colList)
 
             #render the UI in its default state
-            @html uiTable
+
+
 
             #set up the UI initial state as requested by moving elements around
 
@@ -857,7 +855,7 @@ callWithJQuery ($) ->
 
             #the very first refresh will actually display the table
             refresh()
-
+            console.log( @find(".pvtAxisContainer"));
             @find(".pvtAxisContainer").sortable
                     update: (e, ui) -> refresh() if not ui.sender?
                     connectWith: @find(".pvtAxisContainer")
