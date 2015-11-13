@@ -907,7 +907,7 @@
     Pivot Table core: create PivotData object and call Renderer on it
      */
     $.fn.pivot = function(input, opts) {
-      var defaults, e, pivotData, result, x;
+      var defaults, e, error, error1, pivotData, result, x;
       defaults = {
         cols: [],
         rows: [],
@@ -929,15 +929,15 @@
         pivotData = new PivotData(input, opts);
         try {
           result = opts.renderer(pivotData, opts.rendererOptions);
-        } catch (_error) {
-          e = _error;
+        } catch (error) {
+          e = error;
           if (typeof console !== "undefined" && console !== null) {
             console.error(e.stack);
           }
           result = $("<span>").html(opts.localeStrings.renderError);
         }
-      } catch (_error) {
-        e = _error;
+      } catch (error1) {
+        e = error1;
         if (typeof console !== "undefined" && console !== null) {
           console.error(e.stack);
         }
@@ -954,7 +954,7 @@
     Pivot Table UI: calls Pivot Table core above with options set by user
      */
     $.fn.pivotUI = function(input, inputOpts, overwrite, locale) {
-      var a, aggregator, attrLength, axisValues, c, colList, defaults, e, existingOpts, fn, i, initialRender, k, l, len1, len2, len3, len4, n, o, opts, pivotTable, q, ref, ref1, ref2, ref3, ref4, refresh, refreshDelayed, renderer, rendererControl, shownAttributes, tblCols, tr1, tr2, uiTable, unusedAttrsVerticalAutoCutoff, unusedAttrsVerticalAutoOverride, x;
+      var a, aggregator, attrLength, axisValues, c, colList, defaults, e, error, existingOpts, fn, i, initialRender, k, l, len1, len2, len3, len4, n, o, opts, pivotTable, q, ref, ref1, ref2, ref3, ref4, refresh, refreshDelayed, renderer, rendererControl, shownAttributes, tblCols, unusedAttrsVerticalAutoCutoff, unusedAttrsVerticalAutoOverride, x;
       if (overwrite == null) {
         overwrite = false;
       }
@@ -1036,10 +1036,7 @@
           }
           return results;
         });
-        uiTable = $("<table>", {
-          "class": "pvtUi"
-        }).attr("cellpadding", 5);
-        rendererControl = $("<td>");
+        rendererControl = $(".pivotUI #renderers");
         renderer = $("<select>").addClass('pvtRenderer').appendTo(rendererControl).bind("change", function() {
           return refresh();
         });
@@ -1048,7 +1045,7 @@
           if (!hasProp.call(ref1, x)) continue;
           $("<option>").val(x).html(x).appendTo(renderer);
         }
-        colList = $("<td>").addClass('pvtAxisContainer pvtUnused');
+        colList = $(".pivotUI #dimensions").addClass('pvtAxisContainer pvtUnused');
         shownAttributes = (function() {
           var len2, n, results;
           results = [];
@@ -1183,7 +1180,6 @@
           c = shownAttributes[i];
           fn(c);
         }
-        tr1 = $("<tr>").appendTo(uiTable);
         aggregator = $("<select>").addClass('pvtAggregator').bind("change", function() {
           return refresh();
         });
@@ -1192,18 +1188,10 @@
           if (!hasProp.call(ref2, x)) continue;
           aggregator.append($("<option>").val(x).html(x));
         }
-        $("<td>").addClass('pvtVals').appendTo(tr1).append(aggregator).append($("<br>"));
-        $("<td>").addClass('pvtAxisContainer pvtHorizList pvtCols').appendTo(tr1);
-        tr2 = $("<tr>").appendTo(uiTable);
-        tr2.append($("<td>").addClass('pvtAxisContainer pvtRows').attr("valign", "top"));
-        pivotTable = $("<td>").attr("valign", "top").addClass('pvtRendererArea').appendTo(tr2);
-        if (opts.unusedAttrsVertical === true || unusedAttrsVerticalAutoOverride) {
-          uiTable.find('tr:nth-child(1)').prepend(rendererControl);
-          uiTable.find('tr:nth-child(2)').prepend(colList);
-        } else {
-          uiTable.prepend($("<tr>").append(rendererControl).append(colList));
-        }
-        this.html(uiTable);
+        $(".pivotUI #measures").addClass('pvtVals').append(aggregator).append($("<br>"));
+        $(".pivotUI #pivotColDrop").addClass('pvtAxisContainer pvtHorizList pvtCols');
+        $(".pivotUI #pivotRowDrop").addClass('pvtAxisContainer pvtHorizList pvtRows');
+        pivotTable = $(".pivotUI #pivotResult").attr("valign", "top").addClass('pvtRendererArea');
         ref3 = opts.cols;
         for (o = 0, len3 = ref3.length; o < len3; o++) {
           x = ref3[o];
@@ -1342,6 +1330,7 @@
           };
         })(this);
         refresh();
+        console.log(this.find(".pvtAxisContainer"));
         this.find(".pvtAxisContainer").sortable({
           update: function(e, ui) {
             if (ui.sender == null) {
@@ -1352,8 +1341,8 @@
           items: 'li',
           placeholder: 'pvtPlaceholder'
         });
-      } catch (_error) {
-        e = _error;
+      } catch (error) {
+        e = error;
         if (typeof console !== "undefined" && console !== null) {
           console.error(e.stack);
         }
