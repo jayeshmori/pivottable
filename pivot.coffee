@@ -139,19 +139,9 @@ callWithJQuery ($) ->
         "Average":              tpl.average(usFmt)
         "Minimum":              tpl.min(usFmt)
         "Maximum":              tpl.max(usFmt)
-        "Sum over Sum":         tpl.sumOverSum(usFmt)
-        "80% Upper Bound":      tpl.sumOverSumBound80(true, usFmt)
-        "80% Lower Bound":      tpl.sumOverSumBound80(false, usFmt)
-        "Sum as Fraction of Total":     tpl.fractionOf(tpl.sum(),   "total", usFmtPct)
-        "Sum as Fraction of Rows":      tpl.fractionOf(tpl.sum(),   "row",   usFmtPct)
-        "Sum as Fraction of Columns":   tpl.fractionOf(tpl.sum(),   "col",   usFmtPct)
-        "Count as Fraction of Total":   tpl.fractionOf(tpl.count(), "total", usFmtPct)
-        "Count as Fraction of Rows":    tpl.fractionOf(tpl.count(), "row",   usFmtPct)
-        "Count as Fraction of Columns": tpl.fractionOf(tpl.count(), "col",   usFmtPct)
 
     renderers =
         "Table":          (pvtData, opts) ->   pivotTableRenderer(pvtData, opts)
-        "Table Barchart": (pvtData, opts) -> $(pivotTableRenderer(pvtData, opts)).barchart()
         "Heatmap":        (pvtData, opts) -> $(pivotTableRenderer(pvtData, opts)).heatmap()
         "Row Heatmap":    (pvtData, opts) -> $(pivotTableRenderer(pvtData, opts)).heatmap("rowheatmap")
         "Col Heatmap":    (pvtData, opts) -> $(pivotTableRenderer(pvtData, opts)).heatmap("colheatmap")
@@ -606,7 +596,8 @@ callWithJQuery ($) ->
 
             rendererControl = $(".pivotUI #renderers");
             renderer = $("<select>")
-                .addClass('pvtRenderer')
+                .addClass('pvtRenderer selectpicker')
+                .attr('data-width','90%')
                 .appendTo(rendererControl)
                 .bind "change", -> refresh() #capture reference
             for own x of opts.renderers
@@ -711,7 +702,7 @@ callWithJQuery ($) ->
 
 
             #aggregator menu and value area
-            aggregator = $("<select>").addClass('pvtAggregator')
+            aggregator = $("<select>").addClass('pvtAggregator selectpicker').attr('data-width','90%')
                 .bind "change", -> refresh() #capture reference
             for own x of opts.aggregators
                 aggregator.append $("<option>").val(x).html(x)
@@ -782,7 +773,8 @@ callWithJQuery ($) ->
                     pvtVals = @find(".pvtVals")
                     for x in [0...numInputsToProcess]
                         newDropdown = $("<select>")
-                            .addClass('pvtAttrDropdown')
+                            .addClass('pvtAttrDropdown selectpicker')
+                            .attr('data-width','90%')
                             .append($("<option>"))
                             .bind "change", -> refresh()
                         for attr in shownAttributes
@@ -847,6 +839,7 @@ callWithJQuery ($) ->
                         .appendTo unusedAttrsContainer
 
                 pivotTable.css("opacity", 1)
+                @find(".selectpicker").selectpicker('render')
                 opts.onRefresh(pivotUIOptions) if opts.onRefresh?
 
             refresh = =>
