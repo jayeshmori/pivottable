@@ -635,12 +635,12 @@ callWithJQuery ($) ->
                         valueList.append $("<p>").html(opts.localeStrings.tooMany)
                     else
                         btns = $("<p>").appendTo(valueList)
-                        btns.append $("<button>", {type:"button"}).html(opts.localeStrings.selectAll).bind "click", ->
+                        btns.append $("<button>", {type:"button", class:"btn btn-xs btn-default mr-10"}).html(opts.localeStrings.selectAll).bind "click", ->
                             valueList.find("input:visible").prop "checked", true
-                        btns.append $("<button>", {type:"button"}).html(opts.localeStrings.selectNone).bind "click", ->
+                        btns.append $("<button>", {type:"button", class:"btn btn-xs btn-default"}).html(opts.localeStrings.selectNone).bind "click", ->
                             valueList.find("input:visible").prop "checked", false
                         btns.append $("<br>")
-                        btns.append $("<input>", {type: "text", placeholder: opts.localeStrings.filterResults, class: "pvtSearch"}).bind "keyup", ->
+                        btns.append $("<input>", {type: "text", placeholder: opts.localeStrings.filterResults, class: "pvtSearch form-control mt-10"}).bind "keyup", ->
                             filter = $(this).val().toLowerCase()
                             valueList.find('.pvtCheckContainer p').each ->
                                 testString = $(this).text().toLowerCase().indexOf(filter)
@@ -681,7 +681,7 @@ callWithJQuery ($) ->
                             valueList.toggle(0, refresh)
 
                     $("<p>").appendTo(valueList)
-                        .append $("<button>", {type:"button"}).text("OK").bind "click", updateFilter
+                        .append $("<button>", {type:"button",class:"btn btn-xs btn-default"}).text("OK").bind "click", updateFilter
 
                     showFilterList = (e) ->
                         {left: clickLeft, top: clickTop, } = $(e.currentTarget).position()
