@@ -338,24 +338,12 @@
         "Integer Sum": tpl.sum(usFmtInt),
         "Average": tpl.average(usFmt),
         "Minimum": tpl.min(usFmt),
-        "Maximum": tpl.max(usFmt),
-        "Sum over Sum": tpl.sumOverSum(usFmt),
-        "80% Upper Bound": tpl.sumOverSumBound80(true, usFmt),
-        "80% Lower Bound": tpl.sumOverSumBound80(false, usFmt),
-        "Sum as Fraction of Total": tpl.fractionOf(tpl.sum(), "total", usFmtPct),
-        "Sum as Fraction of Rows": tpl.fractionOf(tpl.sum(), "row", usFmtPct),
-        "Sum as Fraction of Columns": tpl.fractionOf(tpl.sum(), "col", usFmtPct),
-        "Count as Fraction of Total": tpl.fractionOf(tpl.count(), "total", usFmtPct),
-        "Count as Fraction of Rows": tpl.fractionOf(tpl.count(), "row", usFmtPct),
-        "Count as Fraction of Columns": tpl.fractionOf(tpl.count(), "col", usFmtPct)
+        "Maximum": tpl.max(usFmt)
       };
     })(aggregatorTemplates);
     renderers = {
       "Table": function(pvtData, opts) {
         return pivotTableRenderer(pvtData, opts);
-      },
-      "Table Barchart": function(pvtData, opts) {
-        return $(pivotTableRenderer(pvtData, opts)).barchart();
       },
       "Heatmap": function(pvtData, opts) {
         return $(pivotTableRenderer(pvtData, opts)).heatmap();
@@ -1037,7 +1025,7 @@
           return results;
         });
         rendererControl = $(".pivotUI #renderers");
-        renderer = $("<select>").addClass('pvtRenderer').appendTo(rendererControl).bind("change", function() {
+        renderer = $("<select>").addClass('pvtRenderer selectpicker').attr('data-width', '90%').appendTo(rendererControl).bind("change", function() {
           return refresh();
         });
         ref1 = opts.renderers;
@@ -1094,12 +1082,14 @@
           } else {
             btns = $("<p>").appendTo(valueList);
             btns.append($("<button>", {
-              type: "button"
+              type: "button",
+              "class": "btn btn-xs btn-default mr-10"
             }).html(opts.localeStrings.selectAll).bind("click", function() {
               return valueList.find("input:visible").prop("checked", true);
             }));
             btns.append($("<button>", {
-              type: "button"
+              type: "button",
+              "class": "btn btn-xs btn-default"
             }).html(opts.localeStrings.selectNone).bind("click", function() {
               return valueList.find("input:visible").prop("checked", false);
             }));
@@ -1107,7 +1097,7 @@
             btns.append($("<input>", {
               type: "text",
               placeholder: opts.localeStrings.filterResults,
-              "class": "pvtSearch"
+              "class": "pvtSearch form-control mt-10"
             }).bind("keyup", function() {
               var filter;
               filter = $(this).val().toLowerCase();
@@ -1155,7 +1145,8 @@
             }
           };
           $("<p>").appendTo(valueList).append($("<button>", {
-            type: "button"
+            type: "button",
+            "class": "btn btn-xs btn-default"
           }).text("OK").bind("click", updateFilter));
           showFilterList = function(e) {
             var clickLeft, clickTop, ref3;
@@ -1180,7 +1171,7 @@
           c = shownAttributes[i];
           fn(c);
         }
-        aggregator = $("<select>").addClass('pvtAggregator').bind("change", function() {
+        aggregator = $("<select>").addClass('pvtAggregator selectpicker').attr('data-width', '90%').bind("change", function() {
           return refresh();
         });
         ref2 = opts.aggregators;
@@ -1241,7 +1232,7 @@
             if (numInputsToProcess !== 0) {
               pvtVals = _this.find(".pvtVals");
               for (x = s = 0, ref6 = numInputsToProcess; 0 <= ref6 ? s < ref6 : s > ref6; x = 0 <= ref6 ? ++s : --s) {
-                newDropdown = $("<select>").addClass('pvtAttrDropdown').append($("<option>")).bind("change", function() {
+                newDropdown = $("<select>").addClass('pvtAttrDropdown selectpicker').attr('data-width', '90%').append($("<option>")).bind("change", function() {
                   return refresh();
                 });
                 for (t = 0, len5 = shownAttributes.length; t < len5; t++) {
@@ -1318,6 +1309,7 @@
               }).appendTo(unusedAttrsContainer);
             }
             pivotTable.css("opacity", 1);
+            _this.find(".selectpicker").selectpicker('render');
             if (opts.onRefresh != null) {
               return opts.onRefresh(pivotUIOptions);
             }
