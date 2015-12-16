@@ -347,12 +347,6 @@
       },
       "Heatmap": function(pvtData, opts) {
         return $(pivotTableRenderer(pvtData, opts)).heatmap();
-      },
-      "Row Heatmap": function(pvtData, opts) {
-        return $(pivotTableRenderer(pvtData, opts)).heatmap("rowheatmap");
-      },
-      "Col Heatmap": function(pvtData, opts) {
-        return $(pivotTableRenderer(pvtData, opts)).heatmap("colheatmap");
       }
     };
     locales = {
@@ -942,7 +936,7 @@
     Pivot Table UI: calls Pivot Table core above with options set by user
      */
     $.fn.pivotUI = function(input, inputOpts, overwrite, locale) {
-      var a, aggregator, attrLength, axisValues, c, colList, defaults, e, error, existingOpts, fn, i, initialRender, k, l, len1, len2, len3, len4, n, o, opts, pivotTable, q, ref, ref1, ref2, ref3, ref4, refresh, refreshDelayed, renderer, rendererControl, shownAttributes, tblCols, unusedAttrsVerticalAutoCutoff, unusedAttrsVerticalAutoOverride, x;
+      var a, aggregator, attrLength, axisValues, c, colList, defaults, droppingOutside, e, error, existingOpts, fn, i, initialRender, k, l, len1, len2, len3, len4, n, o, opts, pivotTable, q, ref, ref1, ref2, ref3, ref4, refresh, refreshDelayed, renderer, rendererControl, shownAttributes, tblCols, unusedAttrsVerticalAutoCutoff, unusedAttrsVerticalAutoOverride, x;
       if (overwrite == null) {
         overwrite = false;
       }
@@ -1149,12 +1143,24 @@
             "class": "btn btn-xs btn-default"
           }).text("OK").bind("click", updateFilter));
           showFilterList = function(e) {
-            var clickLeft, clickTop, ref3;
+            var bottomPos, clickLeft, clickTop, filterBoxHeight, overflow, ref3, ref4;
             ref3 = $(e.currentTarget).position(), clickLeft = ref3.left, clickTop = ref3.top;
-            valueList.css({
-              left: clickLeft + 10,
-              top: clickTop + 10
-            }).toggle();
+            filterBoxHeight = $(".pvtFilterBox").height();
+            overflow = (ref4 = (e.clientY + filterBoxHeight) > $("body").height()) != null ? ref4 : {
+              "true": false
+            };
+            if (overflow) {
+              bottomPos = $("body").height() - e.clientY;
+              valueList.css({
+                left: clickLeft + 10,
+                bottom: bottomPos
+              }).toggle();
+            } else {
+              valueList.css({
+                left: clickLeft + 10,
+                top: clickTop + 10
+              }).toggle();
+            }
             valueList.find('.pvtSearch').val('');
             return valueList.find('.pvtCheckContainer p').show();
           };
@@ -1164,7 +1170,14 @@
             attrElem.addClass('pvtFilteredAttribute');
           }
           colList.append(attrElem).append(valueList);
-          return attrElem.bind("dblclick", showFilterList);
+          attrElem.bind("dblclick", showFilterList);
+          return $(document).mouseup(function(e) {
+            var container;
+            container = $('.pvtFilterBox');
+            if (!container.is(e.target) && container.has(e.target).length === 0) {
+              container.hide();
+            }
+          });
         };
         for (i in shownAttributes) {
           if (!hasProp.call(shownAttributes, i)) continue;
@@ -1322,7 +1335,7 @@
           };
         })(this);
         refresh();
-        console.log(this.find(".pvtAxisContainer"));
+        droppingOutside = false;
         this.find(".pvtAxisContainer").sortable({
           update: function(e, ui) {
             if (ui.sender == null) {
@@ -1331,7 +1344,21 @@
           },
           connectWith: this.find(".pvtAxisContainer"),
           items: 'li',
-          placeholder: 'pvtPlaceholder'
+          appendTo: document.body,
+          zIndex: 10000,
+          helper: 'clone',
+          placeholder: 'pvtPlaceholder',
+          over: function(e, ui) {
+            return droppingOutside = false;
+          },
+          out: function(e, ui) {
+            return droppingOutside = true;
+          },
+          beforeStop: function(e, ui) {
+            if (droppingOutside === true) {
+              ui.item.prependTo('#dimensions');
+            }
+          }
         });
       } catch (error) {
         e = error;
