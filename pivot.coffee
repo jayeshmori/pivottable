@@ -876,17 +876,13 @@ callWithJQuery ($) ->
                     placeholder: 'pvtPlaceholder'
                     over: (e, ui) ->
                         droppingOutside = false
-                        console.log("over:")
-                        console.log(droppingOutside)
+                        return
                     out: (e, ui) ->
                         droppingOutside = true
-                        console.log(droppingOutside)
+                        return
                     beforeStop: (e, ui) ->
-                        console.log("beforeStop");
-                        console.log(droppingOutside)
                         if droppingOutside is true
-                            console.log("dropping outside");
-                            console.log(ui.item);
+
                             ui.item.prependTo('#dimensions');
                         return
         catch e
